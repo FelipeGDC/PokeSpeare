@@ -1,14 +1,16 @@
 plugins {
     id("com.android.application")
     kotlin("android")
+    id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
-    compileSdkVersion(Sdk.COMPILE_SDK_VERSION)
+    compileSdk = Sdk.COMPILE_SDK_VERSION
 
     defaultConfig {
-        minSdkVersion(Sdk.MIN_SDK_VERSION)
-        targetSdkVersion(Sdk.TARGET_SDK_VERSION)
+        minSdk = Sdk.MIN_SDK_VERSION
+        targetSdk = Sdk.TARGET_SDK_VERSION
 
         applicationId = AppCoordinates.APP_ID
         versionCode = AppCoordinates.APP_VERSION_CODE
@@ -35,7 +37,7 @@ android {
         }
     }
 
-    lintOptions {
+    lint {
         isWarningsAsErrors = true
         isAbortOnError = true
     }
@@ -57,12 +59,16 @@ android {
 dependencies {
     implementation(kotlin("stdlib-jdk7"))
 
-    implementation(project(":library-android"))
-    implementation(project(":library-kotlin"))
+    implementation(project(":pokespeare-sdk"))
 
-    implementation(SupportLibs.ANDROIDX_APPCOMPAT)
-    implementation(SupportLibs.ANDROIDX_CONSTRAINT_LAYOUT)
-    implementation(SupportLibs.ANDROIDX_CORE_KTX)
+    implementation(AndroidLibs.ANDROIDX_APPCOMPAT)
+    implementation(AndroidLibs.ANDROIDX_CONSTRAINT_LAYOUT)
+    implementation(AndroidLibs.ANDROIDX_CORE_KTX)
+    implementation(AndroidLibs.ANDROID_FRAGMENT)
+    implementation(AndroidLibs.ANDROID_NAVIGATION_FRAGMENT)
+    implementation(AndroidLibs.ANDROID_NAVIGATION_UI)
+    implementation(AndroidLibs.ANDROID_LIFECYCLE)
+    implementation(AndroidLibs.ANDROID_LIFECYCLE_RUNTIME)
 
     testImplementation(TestingLib.JUNIT)
 
@@ -70,4 +76,22 @@ dependencies {
     androidTestImplementation(AndroidTestingLib.ANDROIDX_TEST_EXT_JUNIT_KTX)
     androidTestImplementation(AndroidTestingLib.ANDROIDX_TEST_RULES)
     androidTestImplementation(AndroidTestingLib.ESPRESSO_CORE)
+
+    implementation(Libs.MATERIAL)
+
+    implementation(Libs.LOTTIE)
+
+    // Dagger Hilt
+    implementation(Libs.DAGGER_HILT)
+    kapt(Libs.DAGGER_HILT_COMPILER)
+
+    // Retrofit
+    implementation(Libs.RETROFIT)
+    implementation(Libs.RETROFIT_MOSHI_CONVERTER)
+
+    implementation(Libs.OKHTTP_INTERCEPTOR)
+
+    // Coil
+    implementation(Libs.COIL)
+    implementation(Libs.COIL_SVG)
 }

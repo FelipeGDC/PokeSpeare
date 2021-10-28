@@ -1,5 +1,11 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
+buildscript {
+    dependencies {
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.38.1")
+    }
+}
+
 plugins {
     id("com.android.application") apply false
     id("com.android.library") apply false
@@ -7,7 +13,6 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version BuildPluginsVersion.DETEKT
     id("org.jlleitschuh.gradle.ktlint") version BuildPluginsVersion.KTLINT
     id("com.github.ben-manes.versions") version BuildPluginsVersion.VERSIONS_PLUGIN
-    cleanup
 }
 
 allprojects {
@@ -22,6 +27,7 @@ subprojects {
     apply {
         plugin("io.gitlab.arturbosch.detekt")
         plugin("org.jlleitschuh.gradle.ktlint")
+        plugin("com.github.ben-manes.versions")
         plugin("com.github.ben-manes.versions")
     }
 

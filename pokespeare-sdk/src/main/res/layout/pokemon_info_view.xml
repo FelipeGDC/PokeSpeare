@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/infoViewWrapper"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:background="@drawable/background_item_pokemon"
+    android:backgroundTint="@color/default_grey"
+    android:clickable="true"
+    android:clipToPadding="false"
+    android:focusable="true"
+    android:padding="8dp">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/pokemonName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:fontFamily="@font/cabin_bold"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Charizard" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/pokemonId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:alpha="0.25"
+        android:fontFamily="@font/cabin_bold"
+        android:gravity="top"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="#006" />
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/pokemonDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/background_item_pokemon_span"
+        android:fontFamily="@font/cabin_bold"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@id/pokeballBg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pokemonName"
+        tools:text="Spits fire yond is hot enow to melt boulders. Known to cause forest fires unintentionally" />
+
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/pokeballBg"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="-16dp"
+        android:layout_marginBottom="-24dp"
+        android:adjustViewBounds="true"
+        android:alpha="0.25"
+        android:src="@drawable/pokeball"
+        android:tint="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pokemonId" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/pokemonSprite"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:adjustViewBounds="true"
+        app:layout_constraintBottom_toBottomOf="@id/pokeballBg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pokemonId"
+        tools:src="@drawable/charizard" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

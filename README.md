@@ -1,32 +1,122 @@
-# kotlin-android-template 🤖
 
-[![Use this template](https://img.shields.io/badge/from-kotlin--android--template-brightgreen?logo=dropbox)](https://github.com/cortinico/kotlin-android-template/generate) ![Pre Merge Checks](https://github.com/cortinico/kotlin-android-template/workflows/Pre%20Merge%20Checks/badge.svg)  ![License](https://img.shields.io/github/license/cortinico/kotlin-android-template.svg) ![Language](https://img.shields.io/github/languages/top/cortinico/kotlin-android-template?color=blue&logo=kotlin)
+# PokeSpeare SDK and Sample implementation:
 
-A simple Github template that lets you create an **Android/Kotlin** project and be up and running in a **few seconds**. 
+- SDK developed to get the information of an specific Pokemon and the sprite when passing the name as a parameter. The SDK also has a custom view for easier display of the Pokemon information.
 
-This template is focused on delivering a project with **static analysis** and **continuous integration** already in place.
+- The project also comes with a sample App implementing the SDK with a search bar and implementing the custom view.
 
-## How to use 👣
+- SDK Architecture approach inspired by DDD and CLEAN concepts.
 
-Just click on [![Use this template](https://img.shields.io/badge/-Use%20this%20template-brightgreen)](https://github.com/cortinico/kotlin-android-template/generate) button to create a new repo starting from this template.
+## How to use
 
-Once created don't forget to update the:
-- [App ID](buildSrc/src/main/java/Coordinates.kt)
-- AndroidManifest ([here](app/src/main/AndroidManifest.xml) and [here](library-android/src/main/AndroidManifest.xml))
-- Package of the source files
+To initialize and use the SDK use `PokemonSDK` with context:
 
-## Features 🎨
+```kotlin  
+// Initialization  
+val pokemonSdk: PokemonSdk = PokemonSDK(context)  
+  
+```  
 
-- **100% Kotlin-only template**.
-- 3 Sample modules (Android app, Android library, Kotlin library).
-- Sample Espresso, Instrumentation & JUnit tests.
-- 100% Gradle Kotlin DSL setup.
-- CI Setup with GitHub Actions.
-- Publish to **Maven Central** with Github Actions.
-- Dependency versions managed via `buildSrc`.
-- Kotlin Static Analysis via `ktlint` and `detekt`.
-- Issues Template (bug report + feature request).
-- Pull Request Template.
+Then you can access the information through the public methods:
+
+```kotlin  
+pokemonSdk.getPokemonDescription("Pokemon name") //Returns PokemonDescriptionSdk  
+  
+pokemonSdk.getPokemonSprite("Pokemon name") //Return PokemonSpriteSdk  
+```  
+
+The SDK is currently working with two classes: `PokemonDescriptionSdk` and `PokemonSpriteSdk`, both of which come with a field `State` to know the result of the request:
+```kotlin  
+data class PokemonDescriptionSdk(  
+ var state: State<Any>?,  
+ var description: String? = "",  
+ var generation: String? = "",  
+ var genera: String? = "",  
+ var name: String? = "",  
+ var pokedexNumber: Int? = 0  
+)  
+  
+data class PokemonSpriteSdk(  
+ var state: State<Any>?,   
+var url: String = "",var type: String = "")  
+```  
+
+The custom component is called `PokemonInfoView`:
+```xml
+    <com.fgdc.pokespearesdk.presentation.component.PokemonInfoView
+        android:id="@+id/pokemonInfoView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+```
+
+And the way we can set the values is in the fragment/activity we are using it, through access to it's identifiers:
+
+```kotlin  
+       pokemonInfoView.name.text = "Pokemon name"
+       pokemonInfoView.description.text = "Pokemon description"
+       pokemonInfoView.pokedexNumber.text = "Pokemon Pokedex number"
+       pokemonInfoView.sprite = ImageView
+```  
+
+## Libraries 🛠️
+
+- [Flow](https://developer.android.com/kotlin/flow)
+- [Dagger Hilt](https://dagger.dev/hilt/)
+- [Coil](https://coil-kt.github.io/coil/)
+- [Android Jetpack](https://developer.android.com/jetpack)
+    - [Navigator](https://developer.android.com/guide/navigation/navigation-getting-started)
+    - [View Binding](https://developer.android.com/topic/libraries/view-binding)
+    - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel)
+    - [Lifecycle](https://developer.android.com/topic/libraries/architecture/lifecycle)
+- [Retrofit](https://square.github.io/retrofit/)
+- [Moshi](https://github.com/square/moshi)
+- [Lottie](https://github.com/airbnb/lottie-android/)
+
+
+## Structure 🎨
+
+Currently the project is separated into two modules, the app module with the sample project and pokespeare-sdk with the SDK.
+
+### SDK :
+- __Data__: Contains the Repositories Implementations and the Data Sources.
+    - __Source__: In which we have the source of the data we are going to work with, let it be  
+      the API implementation and abstraction, and/or the database. In this case, we have the API  
+      calls. It's all separated by features.
+    - __Repository__: Repositories are responsible to coordinate data from the different Data  
+      Sources. A sort of abstraction for the data sources in order to avoid working directly with  
+      them. We make calls to them and we can ignore whether the data comes from the network or a  
+      local database.
+    - __Mappers__: Classes to map the objects in the data layer to the domain layer.
+- __DI__: The dependency injector package, where the modules and components are created.
+- __Domain__: Collection of entity objects and related business logic that is designed to represent  
+  the enterprise business model.
+    - __Models__: An abstraction of the objects that represent the logic of the project.
+    - __Repository__: The abstraction of the repositories to be implemented in the Data package.
+    - __UseCases__: The interactors that define be the business logic of the application.
+    - __Mappers__: Classes to map the objects in the domain layer to the presentation layer.
+- __Presentation__: There's no fragments or viewmodels in this case, here lies the SDK abstraction that it's used by the users.
+    - __SDK__: The SDK class with the methods, and the models used in this layer.
+    - __Component__: The PokemonInfoView component lies here.
+- __Utils__: A variety of classes, extensions, and helpers to help and use across the application,  
+  that not necessarily have anything to do with the logic of the same.
+
+### App:
+- __UI__: With an MVVM pattern, everything is separated as features, the screens and logic behind  
+  them are found here.
+- __DI__: The dependency injector package, where the modules and components are created.
+- __Utils__: A variety of classes, extensions, and helpers to help and use across the application,  
+  that not necessarily have anything to do with the logic of the same.
+
+## Testing 🧰
+
+#### (There should totally be more tests, but because of the type of project, I haven't tested every part of the application. I decided to test the basic functionalities in the SDK, repositories and usecases, since I felt it was representative enough. At least for the time being.)
+
+- JUnit 4
+- [Mockk](https://mockk.io/)
+- [Kotest](https://github.com/kotest/kotest)
+
 
 ## Gradle Setup 🐘
 
@@ -36,56 +126,20 @@ Dependencies are centralized inside the [Dependencies.kt](buildSrc/src/main/java
 
 ## Static Analysis 🔍
 
-This template is using [**ktlint**](https://github.com/pinterest/ktlint) with the [ktlint-gradle](https://github.com/jlleitschuh/ktlint-gradle) plugin to format your code. To reformat all the source code as well as the buildscript you can run the `ktlintFormat` gradle task.
+This project is using [**ktlint**](https://github.com/pinterest/ktlint) with the [ktlint-gradle](https://github.com/jlleitschuh/ktlint-gradle) plugin to format your code. To reformat all the source code as well as the buildscript you can run the `ktlintFormat` gradle task.
 
-This template is also using [**detekt**](https://github.com/detekt/detekt) to analyze the source code, with the configuration that is stored in the [detekt.yml](config/detekt/detekt.yml) file (the file has been generated with the `detektGenerateConfig` task).
+This project is also using [**detekt**](https://github.com/detekt/detekt) to analyze the source code, with the configuration that is stored in the [detekt.yml](config/detekt/detekt.yml) file (the file has been generated with the `detektGenerateConfig` task).
 
 ## CI ⚙️
 
-This template is using [**GitHub Actions**](https://github.com/cortinico/kotlin-android-template/actions) as CI. You don't need to setup any external service and you should have a running CI once you start using this template.
-
 There are currently the following workflows available:
-- [Validate Gradle Wrapper](.github/workflows/gradle-wrapper-validation.yml) - Will check that the gradle wrapper has a valid checksum
-- [Pre Merge Checks](.github/workflows/pre-merge.yaml) - Will run the `build`, `check` and `publishToMavenLocal` tasks.
-- [Publish Snapshot](.github/workflows/publish-snapshot.yaml) - Will publish a `-SNAPSHOT` of the libraries to Sonatype.
-- [Publish Release](.github/workflows/publish-release.yaml) - Will publish a new release version of the libraries to Maven Central on tag pushes.
+- [Lint](.github/workflows/android-lint.yml) - Runs Android lint
+- [Detekt](.github/workflows/detekt.yml) - Runs detekt.
+- [ktlintCheck](.github/workflows/run-ktlint.yml) - Runs ktlint.
+- [Unit Test](.github/workflows/unit-test.yml) - Run unit tests.
 
-## Publishing 🚀
 
-The template is setup to be **ready to publish** a library/artifact on a Maven Repository.
+# Credits 🤖
 
-For every module you want to publish you simply have to add the `publish` plugin:
-
-```
-plugins {
-    publish
-}
-```
-
-### To Maven Central
-
-In order to use this template to publish on Maven Central, you need to configure some secrets on your repository:
-
-| Secret name | Value |
-| --- | --- | 
-| `ORG_GRADLE_PROJECT_NEXUS_USERNAME` | The username you use to access Sonatype's services (such as [Nexus](https://oss.sonatype.org/) and [Jira](https://issues.sonatype.org/)) |
-| `ORG_GRADLE_PROJECT_NEXUS_PASSWORD` | The password you use to access Sonatype's services (such as [Nexus](https://oss.sonatype.org/) and [Jira](https://issues.sonatype.org/)) |
-| `ORG_GRADLE_PROJECT_SIGNING_KEY` | The GPG Private key to sign your artifacts. You can obtain it with `gpg --armor --export-secret-keys <your@email.here>` or you can create one key online on [pgpkeygen.com](https://pgpkeygen.com). The key starts with a `-----BEGIN PGP PRIVATE KEY BLOCK-----`. |
-| `ORG_GRADLE_PROJECT_SIGNING_PWD` | The passphrase to unlock your private key (you picked it when creating the key). |
-
-The template already sets up [Dokka](https://kotlin.github.io/dokka/) for project documentation and attaches `-sources.jar` to your publications.
-
-Once set up, the following workflows will take care of publishing:
-
-- [Publish Snapshot](.github/workflows/publish-snapshot.yaml) - To publish `-SNAPSHOT` versions to Sonatype. The workflow is setup to run either manually (with `workflow_dispatch`) or on every merge.
-- [Publish Release](.github/workflows/publish-release.yaml) - Will publish a new release version of the libraries to Maven Central on tag pushes. You can trigger the workflow also manually if needed.
-
-### To Jitpack
-
-If you're using [JitPack](https://jitpack.io/), you don't need any further configuration and you can just configure the repo on JitPack.
-
-You probably want to disable the [Publish Snapshot] and [Publish Release](.github/workflows/publish-release.yaml) workflows (delete the files), as Jitpack will take care of that for you.
-
-## Contributing 🤝
-
-Feel free to open a issue or submit a pull request for any bugs/improvements.
+[Kotlin Android Template](https://github.com/cortinico/kotlin-android-template): "A simple Github template that lets you create an **Android/Kotlin** project and be up and running in a **few seconds**."  
+[Kotlin Pokedex](https://github.com/mrcsxsiq/Kotlin-Pokedex): For inspiration regarding designs and idea of how to map type/color.

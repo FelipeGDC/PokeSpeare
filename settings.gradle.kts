@@ -16,10 +16,9 @@ pluginManagement {
     }
 }
 
-rootProject.name = ("kotlin-android-template")
+rootProject.name = ("PokeSpeare")
 
 include(
     "app",
-    "library-android",
-    "library-kotlin"
+    "pokespeare-sdk",
 )
