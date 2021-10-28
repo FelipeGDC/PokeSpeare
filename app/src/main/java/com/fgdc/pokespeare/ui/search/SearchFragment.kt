@@ -83,7 +83,13 @@ class SearchFragment : Fragment() {
                             is State.Success -> {
                                 binding.apply {
                                     pokemonInfoView.sprite.simpleLoad(result.url, requireContext())
-
+                                    pokemonInfoView.infoViewWrapper.background.colorFilter =
+                                        PorterDuffColorFilter(
+                                            TypeColorMapper(requireContext()).mapPokemonTypeToColor(
+                                                result.type
+                                            ),
+                                            PorterDuff.Mode.SRC_ATOP
+                                        )
                                 }
                             }
                         }
