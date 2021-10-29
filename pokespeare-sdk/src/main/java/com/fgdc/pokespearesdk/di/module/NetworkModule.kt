@@ -33,7 +33,8 @@ class NetworkModule {
         @FuntranslationsRetrofit retrofit: Retrofit,
         networkHandler: NetworkHandler
     ): FuntranslationsRemoteSource = FuntranslationsRemoteSourceImpl(
-        retrofit.create(FuntranslationsApi::class.java), networkHandler
+        retrofit.create(FuntranslationsApi::class.java),
+        networkHandler
     )
 
     @Singleton

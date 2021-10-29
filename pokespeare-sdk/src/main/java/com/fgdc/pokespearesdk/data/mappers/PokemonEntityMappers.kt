@@ -9,7 +9,7 @@ import com.fgdc.pokespearesdk.utils.extensions.escapeHtml
 fun PokemonSpeciesResponse.toPokemonDescription() =
     PokemonDescription(
         description =
-            flavorTextEntries!!.filter { it.language!!.name == "en" }[0].flavorText!!.escapeHtml(),
+        flavorTextEntries!!.filter { it.language!!.name == "en" }[0].flavorText!!.escapeHtml(),
         generation = generation!!.name!!,
         genera = genera!!.filter { it.language!!.name == "en" }[0].genus!!,
         name = names!!.filter { it.language!!.name == "en" }[0].name!!,
