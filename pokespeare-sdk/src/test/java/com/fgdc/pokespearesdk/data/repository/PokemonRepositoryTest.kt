@@ -13,8 +13,6 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -46,13 +44,11 @@ class PokemonRepositoryTest {
 
         pokemonRemoteSource.getPokemonDescription(pokemonName) shouldBe mockResponse
 
-        val flow: Flow<State<PokemonDescription>> = repository.getPokemonDescription(pokemonName)
-        flow.collect { result ->
-            result.shouldBeInstanceOf<State.Success<Any>>()
-            when (result) {
-                is State.Success<PokemonDescription> -> {
-                    result.data shouldBe pokemon.toPokemonDescription()
-                }
+        val result: State<PokemonDescription> = repository.getPokemonDescription(pokemonName)
+        result.shouldBeInstanceOf<State.Success<Any>>()
+        when (result) {
+            is State.Success<PokemonDescription> -> {
+                result.data shouldBe pokemon.toPokemonDescription()
             }
         }
     }
@@ -70,13 +66,11 @@ class PokemonRepositoryTest {
 
         pokemonRemoteSource.getPokemonSprite(pokemonName) shouldBe mockResponse
 
-        val flow: Flow<State<PokemonSprite>> = repository.getPokemonSprite(pokemonName)
-        flow.collect { result ->
-            result.shouldBeInstanceOf<State.Success<Any>>()
-            when (result) {
-                is State.Success<PokemonSprite> -> {
-                    result.data shouldBe pokemonSprite.toPokemonSprite()
-                }
+        val result: State<PokemonSprite> = repository.getPokemonSprite(pokemonName)
+        result.shouldBeInstanceOf<State.Success<Any>>()
+        when (result) {
+            is State.Success<PokemonSprite> -> {
+                result.data shouldBe pokemonSprite.toPokemonSprite()
             }
         }
     }

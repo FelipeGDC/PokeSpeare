@@ -5,5 +5,5 @@ import com.fgdc.pokespearesdk.utils.functional.State
 import kotlinx.coroutines.flow.Flow
 
 interface FuntranslationsRepository {
-    fun getTextTranslated(text: String): Flow<State<ShakespeareanTranslation>>
+   suspend fun getTextTranslated(text: String): State<ShakespeareanTranslation>
 }

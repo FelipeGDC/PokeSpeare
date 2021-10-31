@@ -17,12 +17,13 @@ val pokemonSdk: PokemonSdk = PokemonSDK(context)
   
 ```  
 
-Then you can access the information through the public methods:
+Then you can access the information through the public methods, both methods should be called from a coroutine scope:
 
 ```kotlin  
-pokemonSdk.getPokemonDescription("Pokemon name") //Returns PokemonDescriptionSdk  
-  
-pokemonSdk.getPokemonSprite("Pokemon name") //Return PokemonSpriteSdk  
+viewModelScope.launch {
+    pokemonSdk.getPokemonDescription("Pokemon name") //Returns PokemonDescriptionSdk  
+    pokemonSdk.getPokemonSprite("Pokemon name") //Return PokemonSpriteSdk  
+}
 ```  
 
 The SDK is currently working with two classes: `PokemonDescriptionSdk` and `PokemonSpriteSdk`, both of which come with a field `State` to know the result of the request:

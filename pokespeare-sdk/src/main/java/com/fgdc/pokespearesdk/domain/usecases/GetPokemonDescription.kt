@@ -10,7 +10,7 @@ class GetPokemonDescription @Inject constructor(
     private val pokemonRepository: PokemonRepository
 ) : BaseUseCase<State<PokemonDescription>, GetPokemonDescription.Params>() {
 
-    override suspend fun run(params: Params?): Flow<State<PokemonDescription>> {
+    override suspend fun run(params: Params?): State<PokemonDescription> {
         return pokemonRepository.getPokemonDescription(name = params!!.name)
     }
 

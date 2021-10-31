@@ -12,12 +12,14 @@ import com.fgdc.pokespearesdk.domain.usecases.GetPokemonSprite
 import com.fgdc.pokespearesdk.domain.usecases.GetShakespeareanText
 import com.fgdc.pokespearesdk.utils.functional.State
 import javax.inject.Inject
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class PokemonSdk(private val context: Context) {
+class PokemonSdk(
+    private val context: Context,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+) {
 
     @Inject
     lateinit var getPokemonDescription: GetPokemonDescription
@@ -28,7 +30,7 @@ class PokemonSdk(private val context: Context) {
     @Inject
     lateinit var getPokemonSprite: GetPokemonSprite
 
-    val appComponent: ApplicationComponent by lazy {
+    private val appComponent: ApplicationComponent by lazy {
         DaggerApplicationComponent.builder()
             .applicationModule(ApplicationModule(context))
             .build()
@@ -38,86 +40,73 @@ class PokemonSdk(private val context: Context) {
         appComponent.inject(this)
     }
 
-    fun getPokemonDescription(name: String): PokemonDescriptionSdk {
-        lateinit var pokemonDescription: PokemonDescriptionSdk
-        runBlocking {
-            val pokemonRequest = async {
-                getPokemonDescription(GetPokemonDescription.Params(name.lowercase())).collect { result ->
-                    when (result) {
-                        is State.Success -> {
-                            pokemonDescription =
-                                result.data.toPokemonDescriptionSdk(result)
-                        }
-                        is State.BadRequest -> pokemonDescription = PokemonDescriptionSdk(
-                            state = State.BadRequest(
-                                exception = result.exception,
-                                message = result.exception.message.orEmpty()
-                            )
-                        )
-                        is State.Error -> pokemonDescription = PokemonDescriptionSdk(
-                            state = State.Error(
-                                exception = result.exception,
-                                message = result.exception.message.orEmpty()
-                            )
-                        )
-                        is State.ErrorNoConnection -> pokemonDescription = PokemonDescriptionSdk(
-                            state = State.BadRequest(
-                                exception = result.exception,
-                                message = result.exception.message.orEmpty()
-                            )
-                        )
-                    }
-                }
-            }
-            pokemonRequest.await()
-            async {
-                getShakespeareanText(
-                    GetShakespeareanText.Params(pokemonDescription.description.orEmpty())
-                ).collect { result ->
-                    when (result) {
+    suspend fun getPokemonDescription(name: String): PokemonDescriptionSdk =
+        withContext(defaultDispatcher) {
+            when (val result =
+                getPokemonDescription(GetPokemonDescription.Params(name.lowercase()))) {
+                is State.Success -> {
+                    val pokemonDescription =
+                        result.data.toPokemonDescriptionSdk(result)
+                    val resultTranslation = getShakespeareanText(
+                        GetShakespeareanText.Params(pokemonDescription.description.orEmpty())
+                    )
+                    when (resultTranslation) {
                         is State.Success -> {
                             pokemonDescription.description =
-                                result.data.toShakespeareanTranslationSdk().textTranslated
+                                resultTranslation.data.toShakespeareanTranslationSdk().textTranslated
+                        }
+                        else -> {
                         }
                     }
+                    pokemonDescription
                 }
+                is State.BadRequest ->
+                    PokemonDescriptionSdk(
+                        state = State.BadRequest(
+                            exception = result.exception,
+                            message = result.exception.message.orEmpty()
+                        )
+                    )
+                is State.Error -> PokemonDescriptionSdk(
+                    state = State.Error(
+                        exception = result.exception,
+                        message = result.exception.message.orEmpty()
+                    )
+                )
+                is State.ErrorNoConnection ->
+                    PokemonDescriptionSdk(
+                        state = State.BadRequest(
+                            exception = result.exception,
+                            message = result.exception.message.orEmpty()
+                        )
+                    )
             }
         }
-        return pokemonDescription
-    }
 
-    fun getPokemonSprite(name: String): PokemonSpriteSdk {
-        lateinit var pokemonSprite: PokemonSpriteSdk
-        runBlocking {
-            launch {
-                getPokemonSprite(GetPokemonSprite.Params(name.lowercase())).collect { result ->
-                    when (result) {
-                        is State.Success -> {
-                            pokemonSprite =
-                                result.data.toPokemonSpriteSdk(result)
-                        }
-                        is State.BadRequest -> pokemonSprite = PokemonSpriteSdk(
-                            state = State.BadRequest(
-                                exception = result.exception,
-                                message = result.exception.message.orEmpty()
-                            )
-                        )
-                        is State.Error -> pokemonSprite = PokemonSpriteSdk(
-                            state = State.Error(
-                                exception = result.exception,
-                                message = result.exception.message.orEmpty()
-                            )
-                        )
-                        is State.ErrorNoConnection -> pokemonSprite = PokemonSpriteSdk(
-                            state = State.BadRequest(
-                                exception = result.exception,
-                                message = result.exception.message.orEmpty()
-                            )
-                        )
-                    }
+    suspend fun getPokemonSprite(name: String): PokemonSpriteSdk =
+        withContext(defaultDispatcher) {
+            when (val result = getPokemonSprite(GetPokemonSprite.Params(name.lowercase()))) {
+                is State.Success -> {
+                    result.data.toPokemonSpriteSdk(result)
                 }
+                is State.BadRequest -> PokemonSpriteSdk(
+                    state = State.BadRequest(
+                        exception = result.exception,
+                        message = result.exception.message.orEmpty()
+                    )
+                )
+                is State.Error -> PokemonSpriteSdk(
+                    state = State.Error(
+                        exception = result.exception,
+                        message = result.exception.message.orEmpty()
+                    )
+                )
+                is State.ErrorNoConnection -> PokemonSpriteSdk(
+                    state = State.BadRequest(
+                        exception = result.exception,
+                        message = result.exception.message.orEmpty()
+                    )
+                )
             }
         }
-        return pokemonSprite
-    }
 }

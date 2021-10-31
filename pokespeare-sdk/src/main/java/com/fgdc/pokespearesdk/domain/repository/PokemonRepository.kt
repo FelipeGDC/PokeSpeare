@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface PokemonRepository {
 
-    fun getPokemonDescription(name: String): Flow<State<PokemonDescription>>
+    suspend fun getPokemonDescription(name: String): State<PokemonDescription>
 
-    fun getPokemonSprite(name: String): Flow<State<PokemonSprite>>
+    suspend fun getPokemonSprite(name: String): State<PokemonSprite>
 }

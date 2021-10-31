@@ -10,8 +10,6 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -44,13 +42,11 @@ class FuntranslationsRepositoryTest {
 
         funtranslationsRemoteSource.getTextTranslated(initialText) shouldBe mockResponse
 
-        val flow: Flow<State<ShakespeareanTranslation>> = repository.getTextTranslated(initialText)
-        flow.collect { result ->
-            result.shouldBeInstanceOf<State.Success<Any>>()
-            when (result) {
-                is State.Success<ShakespeareanTranslation> -> {
-                    result.data shouldBe textTranslated.toShakespareTranslation()
-                }
+        val result: State<ShakespeareanTranslation> = repository.getTextTranslated(initialText)
+        result.shouldBeInstanceOf<State.Success<Any>>()
+        when (result) {
+            is State.Success<ShakespeareanTranslation> -> {
+                result.data shouldBe textTranslated.toShakespareTranslation()
             }
         }
     }
